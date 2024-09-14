@@ -1,0 +1,101 @@
+import random
+import ipywidgets as widgets
+from IPython.display import display, HTML
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+questions = [
+    {
+        "question": "How often do you engage in physical activity per week?",
+        "answers": [
+            {"answer": "Less than once a week", "weight": 0.1},
+            {"answer": "1-2 times a week", "weight": 0.2},
+            {"answer": "3-4 times a week", "weight": 0.3},
+            {"answer": "5-6 times a week", "weight": 0.3},
+            {"answer": "More than 6 times a week", "weight": 0.1}
+        ]
+    },
+    {
+        "question": "Do you typically eat a balanced diet with fruits, vegetables, and whole grains?",
+        "answers": [
+            {"answer": "No, I rarely eat healthy foods", "weight": 0.1},
+            {"answer": "Sometimes, I try to eat healthy but often struggle", "weight": 0.3},
+            {"answer": "Yes, I make an effort to eat a balanced diet most of the time", "weight": 0.5},
+            {"answer": "Yes, I strictly follow a healthy diet plan", "weight": 0.1}
+        ]
+    },
+    {
+        "question": "How many hours of sleep do you get on average per night?",
+        "answers": [
+            {"answer": "Less than 6 hours", "weight": 0.1},
+            {"answer": "6-7 hours", "weight": 0.2},
+            {"answer": "7-8 hours", "weight": 0.5},
+            {"answer": "More than 8 hours", "weight": 0.2}
+        ]
+    },
+    {
+        "question": "Do you manage stress effectively?",
+        "answers": [
+            {"answer": "No, I often feel overwhelmed and stressed", "weight": 0.2},
+            {"answer": "Sometimes, I struggle to cope with stress", "weight": 0.3},
+            {"answer": "Yes, I have healthy coping mechanisms for stress", "weight": 0.4},
+            {"answer": "Yes, I rarely feel stressed", "weight": 0.1}
+        ]
+    },
+    {
+        "question": "How often do you socialize with friends and family?",
+        "answers": [
+            {"answer": "Rarely, I prefer to spend time alone", "weight": 0.1},
+            {"answer": "Occasionally, I socialize with friends and family", "weight": 0.2},
+            {"answer": "Regularly, I make time for social interactions", "weight": 0.5},
+            {"answer": "Very often, I am very social and have a strong support system", "weight": 0.2}
+        ]
+    }
+]
+
+def simulate_responses(questions):
+  """
+  Simulates responses to the given questions with lifelike answers.
+
+  Args:
+    questions: A list of questions with possible answers and their weights.
+
+  Returns:
+    A dictionary containing the simulated responses.
+  """
+  responses = {}
+  for question in questions:
+    answers = question["answers"]
+    total_weight = sum(answer["weight"] for answer in answers)
+    normalized_weights = [answer["weight"] / total_weight for answer in answers]
+    selected_answer = random.choices(answers, weights=normalized_weights, k=1)[0]
+    responses[question["question"]] = selected_answer["answer"]
+  return responses
+
+num_participants = 380
+participant_data = []
+for i in range(num_participants):
+  participant_id = f"Participant_{i + 1}"
+  responses = simulate_responses(questions)
+  participant_data.append({"Participant ID": participant_id, **responses})
+
+
+df = pd.DataFrame(participant_data)
+
+
+display(HTML("<br><h3>Simulated Participant Responses</h3>"))
+display(df)
+
+
+display(HTML("<br><h3>Visualization of Responses</h3>"))
+
+for question in questions:
+  plt.figure(figsize=(10, 6)) 
+  sns.countplot(x=question["question"], data=df)
+  plt.title(f"Distribution of Responses for: {question['question']}")
+  plt.xlabel(question["question"])
+  plt.ylabel("Number of Participants")
+  plt.xticks(rotation=45, ha="right")  
+  plt.tight_layout() 
+  plt.show()
